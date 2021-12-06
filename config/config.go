@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
-	"path/filepath"
+	"gopkg.in/yaml.v2"
+	"os"
 )
 
 const (
@@ -10,10 +10,10 @@ const (
 )
 
 type Config struct {
-	EmailHandler	EmailHandler
-	ErgastClient	ErgastClient
-	F1APIClient		F1APIClient
-	Repository		Repository
+	EmailHandler EmailHandler `yaml:"email_handler"`
+	ErgastClient ErgastClient `yaml:"ERGAST_F1"`
+	F1APIClient  F1APIClient  `yaml:"f_1_api_client"`
+	Repository   Repository   `yaml:"repository"`
 }
 
 type EmailHandler struct {
@@ -24,29 +24,39 @@ type EmailHandler struct {
 }
 
 type ErgastClient struct {
-	BaseURI                      string `env:"BASE_URL"`
-	DriversEndpoint              string `env:"DRIVERS_ENDPOINT"`
-	DriverStandingsEndpoint      string `env:"DRIVER_STANDINGS_ENDPOINT"`
-	ConstructorStandingsEndpoint string `env:"CONSTRUCTORS_STANDINGS_ENDPOINT"`
+	BaseURI                      string `yaml:"BASE_URL"`
+	DriversEndpoint              string `yaml:"DRIVERS_ENDPOINT"`
+	DriverStandingsEndpoint      string `yaml:"DRIVER_STANDINGS_ENDPOINT"`
+	ConstructorStandingsEndpoint string `yaml:"CONSTRUCTORS_STANDINGS_ENDPOINT"`
 }
 
 type F1APIClient struct {
 	Host          string `env:"HOST"`
 	APIKey        string `env:"API_KEY"`
-	BaseURI       string `env:"BASE_URI"`
+	BaseURI       string `env:"F1_API_BASE_URI"`
 	EventEndpoint string `env:"CURRENT_EVENT_ENDPOINT"`
 	Timezone      string `env:"TIMEZONE"`
 }
 
 type Repository struct {
-
+	// Todo: add Repository variables
 }
 
 // GetConfig loads the variables in .env as env vars
-func GetConfig() error {
-	file := filepath.Join(Directory, ".env")
-	if err := godotenv.Load(file); err != nil {
-		return err
+func GetConfig() (*Config, error) {
+	f, err := os.Open("config/config.yml")
+	if err != nil {
+		//Todo: handle error
+		return nil, err
 	}
-	return nil
+	defer f.Close()
+
+	var cfg Config
+	decoder:= yaml.NewDecoder(f)
+	err = decoder.Decode(&cfg)
+	if err != nil {
+		// Todo: handle error
+	}
+
+	return &cfg, err
 }
