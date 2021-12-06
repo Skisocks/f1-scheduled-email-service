@@ -5,37 +5,33 @@ import (
 	"os"
 )
 
-const (
-	Directory = "config"
-)
-
 type Config struct {
-	EmailHandler EmailHandler `yaml:"email_handler"`
+	EmailHandler EmailHandler `yaml:"EMAIL_HANDLER"`
 	ErgastClient ErgastClient `yaml:"ERGAST_F1"`
-	F1APIClient  F1APIClient  `yaml:"f_1_api_client"`
+	F1APIClient  F1APIClient  `yaml:"F1_API"`
 	Repository   Repository   `yaml:"repository"`
 }
 
 type EmailHandler struct {
-	SenderAddress  string `env:"SENDER_EMAIL_ADDRESS"`
-	SenderPassword string `env:"SENDER_EMAIL_PASSWORD"`
-	SMTPServer     string `env:"SMTP_SERVER"`
-	SMTPHost       string `env:"SMTP_HOST"`
+	SenderAddress  string `yaml:"SENDER_EMAIL_ADDRESS"`
+	SenderPassword string `yaml:"SENDER_EMAIL_PASSWORD"`
+	SMTPServer     string `yaml:"SMTP_SERVER"`
+	SMTPHost       string `yaml:"SMTP_HOST"`
 }
 
 type ErgastClient struct {
-	BaseURI                      string `yaml:"BASE_URL"`
+	BaseURL                      string `yaml:"BASE_URL"`
 	DriversEndpoint              string `yaml:"DRIVERS_ENDPOINT"`
 	DriverStandingsEndpoint      string `yaml:"DRIVER_STANDINGS_ENDPOINT"`
 	ConstructorStandingsEndpoint string `yaml:"CONSTRUCTORS_STANDINGS_ENDPOINT"`
 }
 
 type F1APIClient struct {
-	Host          string `env:"HOST"`
-	APIKey        string `env:"API_KEY"`
-	BaseURI       string `env:"F1_API_BASE_URI"`
-	EventEndpoint string `env:"CURRENT_EVENT_ENDPOINT"`
-	Timezone      string `env:"TIMEZONE"`
+	Host          string `yaml:"HOST"`
+	APIKey        string `yaml:"API_KEY"`
+	BaseURL       string `yaml:"BASE_URL"`
+	EventEndpoint string `yaml:"CURRENT_EVENT_ENDPOINT"`
+	Timezone      string `yaml:"TIMEZONE"`
 }
 
 type Repository struct {
@@ -50,6 +46,7 @@ func GetConfig() (*Config, error) {
 		return nil, err
 	}
 	defer f.Close()
+	//Todo: handle error
 
 	var cfg Config
 	decoder:= yaml.NewDecoder(f)
