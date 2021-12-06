@@ -2,6 +2,7 @@ package clients
 
 import (
 	"email-service/config"
+	"email-service/models"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -52,10 +53,10 @@ func (fa *F1API) do(method string, endpoint string, params map[string]string) (*
 }
 
 
-func (fa *F1API) GetCurrentEvents() (resp *http.Response, err error) {
+func (fa *F1API) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err error) {
 	// Create params
 	params := map[string]string{
-		"date": "2021-12-05",
+		"date": "2021-12-04",
 		"timezone": fa.config.Timezone,
 	}
 
@@ -66,12 +67,15 @@ func (fa *F1API) GetCurrentEvents() (resp *http.Response, err error) {
 	}
 	defer res.Body.Close()
 
+	// Read the body
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return res, err
+		return nil, err
 	}
 
-	if err = json.Unmarshal(body, &resp); err != nil {
+	// Unmarshal the json into a CurrentEvents
+	var CurrentEvent *models.CurrentEvents
+	if err = json.Unmarshal(body, &CurrentEvent); err != nil {
 		return
 	}
 	return
