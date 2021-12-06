@@ -9,7 +9,7 @@ type Config struct {
 	EmailHandler EmailHandler `yaml:"EMAIL_HANDLER"`
 	ErgastClient ErgastClient `yaml:"ERGAST_F1"`
 	F1APIClient  F1APIClient  `yaml:"F1_API"`
-	Repository   Repository   `yaml:"repository"`
+	Repository   Repository   `yaml:"REPOSITORY"`
 }
 
 type EmailHandler struct {
@@ -35,10 +35,13 @@ type F1APIClient struct {
 }
 
 type Repository struct {
-	// Todo: add Repository variables
+	User     string `yaml:"DB_USER"`
+	Password string `yaml:"DB_PASSWORD"`
+	Host     string `yaml:"DB_HOST"`
+	Port     string `yaml:"DB_PORT"`
 }
 
-// GetConfig loads the variables in .env as env vars
+// GetConfig loads the variables from config.ini
 func GetConfig() (*Config, error) {
 	f, err := os.Open("config/config.yml")
 	if err != nil {
