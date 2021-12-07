@@ -15,12 +15,12 @@ type Client interface {
 }
 
 type Ergast struct {
-	config *config.ErgastClient
+	config     *config.ErgastClient
 	httpClient *http.Client
 }
 
 type F1API struct {
-	config *config.F1APIClient
+	config     *config.F1APIClient
 	httpClient *http.Client
 }
 
@@ -53,11 +53,10 @@ func (fa *F1API) do(method string, endpoint string, params map[string]string) (*
 	return fa.httpClient.Do(req)
 }
 
-
 func (fa *F1API) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err error) {
 	// Create params
 	params := map[string]string{
-		"date": "2021-12-04",
+		"date":     "2021-12-04",
 		"timezone": fa.config.Timezone,
 	}
 
@@ -83,4 +82,3 @@ func (fa *F1API) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err er
 	}
 	return
 }
-
