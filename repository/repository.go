@@ -3,11 +3,10 @@ package repository
 import (
 	"database/sql"
 	"email-service/models"
-	"fmt"
 )
 
 type Repository interface {
-	All() ([]models.User, error)
+	GetAll() ([]models.User, error)
 }
 
 // repository is a custom type which wraps the sql.DB connection pool REPO
@@ -19,40 +18,40 @@ func NewRepository(db *sql.DB) *repository {
 	return &repository{DB: db}
 }
 
-func (repo *repository) All() ([]models.User, error) {
+func (repo *repository) GetAll() ([]models.User, error) {
 	rows, err := repo.DB.Query("SELECT * FROM users")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var usrs []models.User
+	var users []models.User
 
 	for rows.Next() {
-		var usr models.User
+		var user models.User
 
-		err := rows.Scan(&usr.UserID, &usr.FirstName, &usr.LastName, &usr.Email)
+		err := rows.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.Email)
 		if err != nil {
 			return nil, err
 		}
 
-		usrs = append(usrs, usr)
+		users = append(users, user)
 	}
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
-	return usrs, nil
+	return users, nil
 }
 
 func (repo *repository) UserEmails() []models.User {
-	usrs, err := repo.All()
+	users, err := repo.GetAll()
 	if err != nil {
 		return nil
 	}
 
-	for _, usr := range usrs {
-		fmt.Printf("%s\n", usr.FirstName)
-		fmt.Printf("hello")
+	var userEmails []string
+	for _, user := range users {
+		userEmails = append(userEmails, user.Email)
 	}
-	return usrs
+	return users
 }
