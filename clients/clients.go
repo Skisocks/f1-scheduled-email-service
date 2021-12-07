@@ -34,7 +34,7 @@ func (fa *F1API) do(method string, endpoint string, params map[string]string) (*
 	baseURL := fmt.Sprintf("%s%s", fa.config.BaseURL, endpoint)
 	req, err := http.NewRequest(method, baseURL, nil)
 	if err != nil {
-		//Todo: handle error
+		// Todo: handle error
 		return nil, err
 	}
 
@@ -70,14 +70,14 @@ func (fa *F1API) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err er
 	// Read the body
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		//Todo: handle error
+		// Todo: handle error
 		return nil, err
 	}
 
 	// Unmarshal the json into a CurrentEvents
 	var CurrentEvent *models.CurrentEvents
 	if err = json.Unmarshal(body, &CurrentEvent); err != nil {
-		//Todo: handle error
+		// Todo: handle error
 		return
 	}
 	return

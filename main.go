@@ -21,11 +21,11 @@ func run() error {
 		return fmt.Errorf("failed to get config: %s", err)
 	}
 
-	F1APIClient := clients.NewF1APIClient(&cfg.F1APIClient, time.Second * 5)
+	F1APIClient := clients.NewF1APIClient(&cfg.F1APIClient, time.Second*5)
 
 	EmailService := service.NewEmailService(F1APIClient)
 
-	err := EmailService.Run()
+	EmailService.Run()
 	if err != nil {
 		return err
 	}

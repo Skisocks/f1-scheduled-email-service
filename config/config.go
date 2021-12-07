@@ -52,7 +52,7 @@ func GetConfig() (*Config, error) {
 	//Todo: handle error
 
 	var cfg Config
-	decoder:= yaml.NewDecoder(f)
+	decoder := yaml.NewDecoder(f)
 	err = decoder.Decode(&cfg)
 	if err != nil {
 		// Todo: handle error

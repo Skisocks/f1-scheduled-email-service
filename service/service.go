@@ -5,13 +5,13 @@ import (
 )
 
 type ScheduleEmailService struct {
-	F1APIClient	*clients.F1API
+	F1APIClient *clients.F1API
 }
 
 func NewEmailService(F1APIClient *clients.F1API) *ScheduleEmailService {
 	return &ScheduleEmailService{F1APIClient}
 }
 
-func (es ScheduleEmailService) Run() error {
+func (es ScheduleEmailService) Run() {
 
 }
