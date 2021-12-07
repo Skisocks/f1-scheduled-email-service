@@ -6,10 +6,10 @@ import (
 )
 
 type Config struct {
-	EmailHandler   EmailHandler   `yaml:"EMAIL_HANDLER"`
-	ErgastClient   ErgastClient   `yaml:"ERGAST_F1"`
-	F1APIClient    F1APIClient `yaml:"F1_API"`
-	DatabaseClient Repository  `yaml:"DATABASE"`
+	EmailHandler EmailHandler   `yaml:"EMAIL_HANDLER"`
+	Ergast     Ergast     `yaml:"ERGAST_F1"`
+	SportsIO   SportsIO   `yaml:"SPORTS_IO"`
+	Repository Repository `yaml:"DATABASE"`
 }
 
 type EmailHandler struct {
@@ -19,14 +19,14 @@ type EmailHandler struct {
 	SMTPHost       string `yaml:"SMTP_HOST"`
 }
 
-type ErgastClient struct {
+type Ergast struct {
 	BaseURL                      string `yaml:"BASE_URL"`
 	DriversEndpoint              string `yaml:"DRIVERS_ENDPOINT"`
 	DriverStandingsEndpoint      string `yaml:"DRIVER_STANDINGS_ENDPOINT"`
 	ConstructorStandingsEndpoint string `yaml:"CONSTRUCTORS_STANDINGS_ENDPOINT"`
 }
 
-type F1APIClient struct {
+type SportsIO struct {
 	Host          string `yaml:"HOST"`
 	APIKey        string `yaml:"API_KEY"`
 	BaseURL       string `yaml:"BASE_URL"`

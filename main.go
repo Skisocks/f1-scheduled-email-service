@@ -25,9 +25,10 @@ func run() error {
 		return fmt.Errorf("failed to get config: %s", err)
 	}
 
-	F1APIClient := clients.NewF1APIClient(&cfg.F1APIClient, time.Second*5)
+	SportsIOClient := clients.NewSportsIOClient(&cfg.SportsIO, time.Second*5)
 
-	DB, err := setupDB(&cfg.DatabaseClient)
+	// Create new database connection pool
+	DB, err := setupDB(&cfg.Repository)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,9 +38,9 @@ func run() error {
 	Users := Repository.UserEmails()
 	_ = fmt.Sprintf("%s", Users)
 
-	EmailService := service.NewEmailService(F1APIClient)
+	EmailService := service.NewEmailService(SportsIOClient, Repository)
 
-	EmailService.Run(F1APIClient)
+	EmailService.Run()
 	if err != nil {
 		return err
 	}

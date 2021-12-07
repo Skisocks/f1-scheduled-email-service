@@ -15,21 +15,30 @@ type Client interface {
 }
 
 type Ergast struct {
-	config     *config.ErgastClient
+	config     *config.Ergast
 	httpClient *http.Client
 }
 
-type F1API struct {
-	config     *config.F1APIClient
+func NewErgastClient(cfg *config.Ergast, timeout time.Duration) *Ergast {
+	return &Ergast{
+		config:     cfg,
+		httpClient: &http.Client{Timeout: timeout},
+	}
+}
+
+type SportsIO struct {
+	config     *config.SportsIO
 	httpClient *http.Client
 }
 
-func NewF1APIClient(cfg *config.F1APIClient, timeout time.Duration) *F1API {
-	return &F1API{cfg, &http.Client{Timeout: timeout}}
+func NewSportsIOClient(cfg *config.SportsIO, timeout time.Duration) *SportsIO {
+	return &SportsIO{
+		config: cfg,
+		httpClient: &http.Client{Timeout: timeout}}
 }
 
 // do is an API call wrapper returning a http.Response
-func (fa *F1API) do(method string, endpoint string, params map[string]string) (*http.Response, error) {
+func (fa *SportsIO) do(method string, endpoint string, params map[string]string) (*http.Response, error) {
 	// Create new request
 	baseURL := fmt.Sprintf("%s%s", fa.config.BaseURL, endpoint)
 	req, err := http.NewRequest(method, baseURL, nil)
@@ -53,7 +62,7 @@ func (fa *F1API) do(method string, endpoint string, params map[string]string) (*
 	return fa.httpClient.Do(req)
 }
 
-func (fa *F1API) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err error) {
+func (fa *SportsIO) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err error) {
 	// Create params
 	params := map[string]string{
 		"date":     "2021-12-04",
