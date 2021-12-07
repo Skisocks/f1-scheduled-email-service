@@ -1,6 +1,15 @@
 package models
 
-import "time"
+import (
+	"time"
+)
+
+type User struct {
+	UserID    int
+	FirstName string
+	LastName  string
+	Email     string
+}
 
 type CurrentEvents struct {
 	Response []struct {
@@ -31,4 +40,3 @@ type CurrentEvents struct {
 		Status   string      `json:"status"`
 	} `json:"response"`
 }
-
