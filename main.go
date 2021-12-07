@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+var TimeOut time.Duration = time.Second*5
+
 func main() {
 	if err := run(); err != nil {
 		panic(err)
@@ -25,7 +27,9 @@ func run() error {
 		return fmt.Errorf("failed to get config: %s", err)
 	}
 
-	SportsIOClient := clients.NewSportsIOClient(&cfg.SportsIO, time.Second*5)
+	SportsIOClient := clients.NewSportsIOClient(&cfg.SportsIO, TimeOut)
+
+	ErgastClient := clients.NewErgastClient(&cfg.Ergast, TimeOut)
 
 	// Create new database connection pool
 	DB, err := setupDB(&cfg.Repository)

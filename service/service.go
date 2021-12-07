@@ -6,15 +6,19 @@ import (
 )
 
 type ScheduleEmailService struct {
-	F1APIClient *clients.SportsIO
-	Repository repository.Repository
+	SportsIOClient *clients.SportsIO
+	ErgastClient   *clients.Ergast
+	Repository     repository.Repository
 }
 
 func NewEmailService(
-	F1APIClient *clients.SportsIO,
-	Repository repository.Repository,
-	) *ScheduleEmailService {
-	return &ScheduleEmailService{F1APIClient, Repository}
+	SportsIOClient *clients.SportsIO,
+	ErgastClient *clients.Ergast,
+	Repository repository.Repository, ) *ScheduleEmailService {
+	return &ScheduleEmailService{
+		SportsIOClient,
+		ErgastClient,
+		Repository}
 }
 
 func (es ScheduleEmailService) Run() {
