@@ -6,10 +6,10 @@ import (
 )
 
 type Config struct {
-	EmailHandler EmailHandler   `yaml:"EMAIL_HANDLER"`
-	Ergast     Ergast     `yaml:"ERGAST_F1"`
-	SportsIO   SportsIO   `yaml:"SPORTS_IO"`
-	Repository Repository `yaml:"DATABASE"`
+	EmailHandler EmailHandler `yaml:"EMAIL_HANDLER"`
+	Ergast       Ergast       `yaml:"ERGAST_F1"`
+	SportsIO     SportsIO     `yaml:"SPORTS_IO"`
+	Repository   Repository   `yaml:"DATABASE"`
 }
 
 type EmailHandler struct {
@@ -23,6 +23,7 @@ type Ergast struct {
 	BaseURL                      string `yaml:"BASE_URL"`
 	DriversEndpoint              string `yaml:"DRIVERS_ENDPOINT"`
 	DriverStandingsEndpoint      string `yaml:"DRIVER_STANDINGS_ENDPOINT"`
+	Season                       string `yaml:"SEASON"`
 	ConstructorStandingsEndpoint string `yaml:"CONSTRUCTORS_STANDINGS_ENDPOINT"`
 }
 
@@ -58,6 +59,7 @@ func GetConfig() (*Config, error) {
 	err = decoder.Decode(&cfg)
 	if err != nil {
 		// Todo: handle error
+		return nil, err
 	}
 
 	return &cfg, err
