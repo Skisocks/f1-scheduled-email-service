@@ -26,6 +26,26 @@ func NewErgastClient(cfg *config.Ergast, timeout time.Duration) *Ergast {
 	}
 }
 
+func (er *Ergast) Do(method string, endpoint string, params map[string]string) (*http.Response, error) {
+	// Create new request
+	baseURL := fmt.Sprintf("%s/%s%s", er.config.BaseURL, er.config.Season, endpoint)
+	req, err := http.NewRequest(method, baseURL, nil)
+	if err != nil {
+		// Todo: handle error
+		return nil, err
+	}
+
+	// Iterate through params and add to query
+	q := req.URL.Query()
+	for key, val := range params {
+		q.Set(key, val)
+	}
+	// Add query to request
+	req.URL.RawQuery = q.Encode()
+
+	return er.httpClient.Do(req)
+}
+
 type SportsIO struct {
 	config     *config.SportsIO
 	httpClient *http.Client
@@ -38,9 +58,9 @@ func NewSportsIOClient(cfg *config.SportsIO, timeout time.Duration) *SportsIO {
 }
 
 // do is an API call wrapper returning a http.Response
-func (fa *SportsIO) do(method string, endpoint string, params map[string]string) (*http.Response, error) {
+func (sio *SportsIO) do(method string, endpoint string, params map[string]string) (*http.Response, error) {
 	// Create new request
-	baseURL := fmt.Sprintf("%s%s", fa.config.BaseURL, endpoint)
+	baseURL := fmt.Sprintf("%s%s", sio.config.BaseURL, endpoint)
 	req, err := http.NewRequest(method, baseURL, nil)
 	if err != nil {
 		// Todo: handle error
@@ -48,8 +68,8 @@ func (fa *SportsIO) do(method string, endpoint string, params map[string]string)
 	}
 
 	// Add headers to the request
-	req.Header.Add("x-rapidapi-host", fa.config.Host)
-	req.Header.Add("x-rapidapi-key", fa.config.APIKey)
+	req.Header.Add("x-rapidapi-host", sio.config.Host)
+	req.Header.Add("x-rapidapi-key", sio.config.APIKey)
 
 	// Iterate through params and add to query
 	q := req.URL.Query()
@@ -59,18 +79,18 @@ func (fa *SportsIO) do(method string, endpoint string, params map[string]string)
 	// Add query to request
 	req.URL.RawQuery = q.Encode()
 
-	return fa.httpClient.Do(req)
+	return sio.httpClient.Do(req)
 }
 
-func (fa *SportsIO) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err error) {
+func (sio *SportsIO) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err error) {
 	// Create params
 	params := map[string]string{
 		"date":     "2021-12-04",
-		"timezone": fa.config.Timezone,
+		"timezone": sio.config.Timezone,
 	}
 
 	// Make the request
-	res, err := fa.do(http.MethodGet, fa.config.EventEndpoint, params)
+	res, err := sio.do(http.MethodGet, sio.config.EventEndpoint, params)
 	if err != nil {
 		return
 	}
