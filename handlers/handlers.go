@@ -31,7 +31,7 @@ func (eh *emailHandler) SendEmail() error {
 	m.SetAddressHeader("From", eh.config.SenderAddress, "F1 Info")
 	m.SetHeader("To", eh.repo.GetUserEmails()...)
 	m.SetHeader("Subject", "Test subject") // Todo: Make subject
-	m.SetBody("text/plain", "Test body") // Todo: Make body
+	m.SetBody("text/plain", "Test body")   // Todo: Make body
 
 	// SMTP settings
 	d := gomail.NewDialer(
@@ -39,7 +39,7 @@ func (eh *emailHandler) SendEmail() error {
 		eh.config.SMTPHost,
 		eh.config.SenderAddress,
 		eh.config.SenderPassword,
-		)
+	)
 
 	// Send email
 	if err := d.DialAndSend(m); err != nil {

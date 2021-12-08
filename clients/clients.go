@@ -53,7 +53,7 @@ type SportsIO struct {
 
 func NewSportsIOClient(cfg *config.SportsIO, timeout time.Duration) *SportsIO {
 	return &SportsIO{
-		config: cfg,
+		config:     cfg,
 		httpClient: &http.Client{Timeout: timeout}}
 }
 
