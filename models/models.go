@@ -11,8 +11,8 @@ type User struct {
 	Email     string
 }
 
-type CurrentEvents struct {
-	Response []struct {
+type EventsResponse struct {
+	Events []struct {
 		Id          int `json:"id"`
 		Competition struct {
 			Id       int    `json:"id"`
