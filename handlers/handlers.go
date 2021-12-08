@@ -7,7 +7,7 @@ import (
 )
 
 type EmailSender interface {
-	SendEmail(UserEmails []string) error
+	SendEmail(subject string, body string, UserEmails []string) error
 }
 
 type emailHandler struct {
@@ -20,14 +20,14 @@ func NewEmailHandler(cfg *config.EmailHandler) *emailHandler {
 	}
 }
 
-func (eh *emailHandler) SendEmail(UserEmails []string) error {
+func (eh *emailHandler) SendEmail(subject string, body string, UserEmails []string) error {
 	m := gomail.NewMessage()
 
 	// Set message headers
 	m.SetAddressHeader("From", eh.config.SenderAddress, "F1 Info")
 	m.SetHeader("To", UserEmails...)
-	m.SetHeader("Subject", "Test subject") // Todo: Make subject
-	m.SetBody("text/plain", "Test body")   // Todo: Make body
+	m.SetHeader("Subject", subject)
+	m.SetBody("text/plain", body)
 
 	// SMTP settings
 	d := gomail.NewDialer(
