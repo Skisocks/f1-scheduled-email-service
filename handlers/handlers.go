@@ -3,6 +3,7 @@ package handlers
 import (
 	"email-service/config"
 	"email-service/models"
+	"email-service/repository"
 )
 
 type emailHandler interface {
@@ -10,14 +11,14 @@ type emailHandler interface {
 }
 
 type EmailHandler struct {
-	config	*config.EmailHandler
-	users	[]models.User
+	config *config.EmailHandler
+	repo  repository.Repository
 }
 
-func NewEmailHandler(cfg *config.EmailHandler, users []models.User) *EmailHandler {
+func NewEmailHandler(cfg *config.EmailHandler, repo repository.Repository) *EmailHandler {
 	return &EmailHandler{
 		config: cfg,
-		users:  users,
+		repo:  users,
 	}
 }
 
