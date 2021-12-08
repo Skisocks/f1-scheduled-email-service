@@ -11,22 +11,22 @@ import (
 )
 
 type CurrentEventGetter interface {
-	GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err error)
+	GetEventsResponse() (*models.EventsResponse, error)
 }
 
-type SportsIO struct {
+type sportsIO struct {
 	config     *config.SportsIO
 	httpClient *http.Client
 }
 
-func NewSportsIOClient(cfg *config.SportsIO, timeout time.Duration) *SportsIO {
-	return &SportsIO{
+func NewSportsIOClient(cfg *config.SportsIO, timeout time.Duration) *sportsIO {
+	return &sportsIO{
 		config:     cfg,
 		httpClient: &http.Client{Timeout: timeout}}
 }
 
 // do is an API call wrapper returning a http.Response
-func (sio *SportsIO) do(method string, endpoint string, params map[string]string) (*http.Response, error) {
+func (sio *sportsIO) do(method string, endpoint string, params map[string]string) (*http.Response, error) {
 	// Create new request
 	baseURL := fmt.Sprintf("%s%s", sio.config.BaseURL, endpoint)
 	req, err := http.NewRequest(method, baseURL, nil)
@@ -50,7 +50,7 @@ func (sio *SportsIO) do(method string, endpoint string, params map[string]string
 	return sio.httpClient.Do(req)
 }
 
-func (sio *SportsIO) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, err error) {
+func (sio *sportsIO) GetEventsResponse() (*models.EventsResponse, error) {
 	// Create params
 	params := map[string]string{
 		"date":     "2021-12-04",
@@ -60,7 +60,7 @@ func (sio *SportsIO) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, er
 	// Make the request
 	res, err := sio.do(http.MethodGet, sio.config.EventEndpoint, params)
 	if err != nil {
-		return
+		return nil, err
 	}
 	defer res.Body.Close()
 
@@ -71,11 +71,11 @@ func (sio *SportsIO) GetCurrentEvents() (CurrentEvents *models.CurrentEvents, er
 		return nil, err
 	}
 
-	// Unmarshal the json into a CurrentEvents
-	var CurrentEvent *models.CurrentEvents
+	// Unmarshal the json into a EventsResponse
+	var CurrentEvent *models.EventsResponse
 	if err = json.Unmarshal(body, &CurrentEvent); err != nil {
 		// Todo: handle error
-		return
+		return nil, err
 	}
-	return
+	return CurrentEvent, nil
 }
