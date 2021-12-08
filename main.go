@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"email-service/clients"
 	"email-service/config"
+	"email-service/handlers"
 	"email-service/repository"
 	"email-service/service"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 	"time"
 )
 
-var TimeOut time.Duration = time.Second*5
+var TimeOut time.Duration = time.Second * 5
 
 func main() {
 	if err := run(); err != nil {
@@ -27,8 +28,8 @@ func run() error {
 		return fmt.Errorf("failed to get config: %s", err)
 	}
 
+	// Initialise API Clients
 	SportsIOClient := clients.NewSportsIOClient(&cfg.SportsIO, TimeOut)
-
 	ErgastClient := clients.NewErgastClient(&cfg.Ergast, TimeOut)
 
 	// Create new database connection pool
@@ -37,12 +38,14 @@ func run() error {
 		log.Fatal(err)
 	}
 
+	// Initialise repo
 	Repository := repository.NewRepository(DB)
 
-	Users := Repository.UserEmails()
-	_ = fmt.Sprintf("%s", Users)
+	// Initialise email handler
+	EmailHandler := handlers.NewEmailHandler(&cfg.EmailHandler, Repository)
+	EmailHandler.SendEmail()
 
-	EmailService := service.NewEmailService(SportsIOClient, Repository)
+	EmailService := service.NewEmailService(SportsIOClient, ErgastClient, Repository, EmailHandler)
 
 	EmailService.Run()
 	if err != nil {
