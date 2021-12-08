@@ -7,6 +7,7 @@ import (
 
 type Repository interface {
 	GetAll() ([]models.User, error)
+	GetUserEmails() []string
 }
 
 // repository is a custom type which wraps the sql.DB connection pool REPO
@@ -43,7 +44,7 @@ func (repo *repository) GetAll() ([]models.User, error) {
 	return users, nil
 }
 
-func (repo *repository) UserEmails() []models.User {
+func (repo *repository) GetUserEmails() []string {
 	users, err := repo.GetAll()
 	if err != nil {
 		return nil
@@ -53,5 +54,5 @@ func (repo *repository) UserEmails() []models.User {
 	for _, user := range users {
 		userEmails = append(userEmails, user.Email)
 	}
-	return users
+	return userEmails
 }
