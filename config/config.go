@@ -16,7 +16,7 @@ type EmailHandler struct {
 	SenderAddress  string `yaml:"SENDER_EMAIL_ADDRESS"`
 	SenderPassword string `yaml:"SENDER_EMAIL_PASSWORD"`
 	SMTPServer     string `yaml:"SMTP_SERVER"`
-	SMTPHost       string `yaml:"SMTP_HOST"`
+	SMTPHost       int    `yaml:"SMTP_HOST"`
 }
 
 type Ergast struct {
