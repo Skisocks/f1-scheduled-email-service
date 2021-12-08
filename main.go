@@ -5,8 +5,8 @@ import (
 	"email-service/clients"
 	"email-service/config"
 	"email-service/handlers"
-	"email-service/repository"
-	"email-service/service"
+	"email-service/repositories"
+	"email-service/services"
 	"fmt"
 	_ "github.com/lib/pq"
 	"log"
@@ -39,13 +39,12 @@ func run() error {
 	}
 
 	// Initialise repo
-	Repository := repository.NewRepository(DB)
+	Repository := repositories.NewRepository(DB)
 
 	// Initialise email handler
-	EmailHandler := handlers.NewEmailHandler(&cfg.EmailHandler, Repository)
-	EmailHandler.SendEmail()
+	EmailHandler := handlers.NewEmailHandler(&cfg.EmailHandler)
 
-	EmailService := service.NewEmailService(SportsIOClient, ErgastClient, Repository, EmailHandler)
+	EmailService := services.NewEmailService(SportsIOClient, ErgastClient, Repository, EmailHandler)
 
 	EmailService.Run()
 	if err != nil {
