@@ -5,8 +5,7 @@ import (
 	"email-service/models"
 )
 
-type Repository interface {
-	GetAll() ([]models.User, error)
+type UserEmailGetter interface {
 	GetUserEmails() []string
 }
 
