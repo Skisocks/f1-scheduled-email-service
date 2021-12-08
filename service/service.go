@@ -3,21 +3,22 @@ package service
 import (
 	"email-service/clients"
 	"email-service/handlers"
+	"email-service/models"
 	"email-service/repository"
 )
 
 type ScheduleEmailService struct {
-	sportsIOClient *clients.SportsIO
-	ergastClient   *clients.Ergast
-	repository     repository.Repository
-	emailHandler   handlers.EmailHandler
+	sportsIOClient clients.CurrentEventGetter
+	ergastClient   clients.StandingsGetter
+	repository     repository.UserEmailGetter
+	emailHandler   handlers.EmailSender
 }
 
 func NewEmailService(
-	SportsIOClient *clients.SportsIO,
-	ErgastClient *clients.Ergast,
-	Repository repository.Repository,
-	EmailHandler handlers.EmailHandler,
+	SportsIOClient clients.CurrentEventGetter,
+	ErgastClient clients.StandingsGetter,
+	Repository repository.UserEmailGetter,
+	EmailHandler handlers.EmailSender,
 ) *ScheduleEmailService {
 	return &ScheduleEmailService{
 		SportsIOClient,
@@ -27,6 +28,22 @@ func NewEmailService(
 	}
 }
 
+func (es ScheduleEmailService) isEvent(EventsResponse *models.EventsResponse) bool {
+	var isEvent bool
+	for i := range EventsResponse.Events {
+		switch EventsResponse.Events[i].Type {
+		case "Race", "1st Qualifying":
+			isEvent = true
+		default:
+			isEvent = false
+		}
+	}
+	return isEvent
+}
+
 func (es ScheduleEmailService) Run() {
 
+	eventsResponse, _ := es.sportsIOClient.GetEventsResponse()
+	if es.isEvent(eventsResponse) == true {
+	}
 }
