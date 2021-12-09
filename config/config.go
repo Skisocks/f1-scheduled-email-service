@@ -47,7 +47,7 @@ type Repository struct {
 
 // GetConfig loads the variables from config.ini
 func GetConfig() (*Config, error) {
-	f, err := os.Open("config/config.yml")
+	f, err := os.Open("/config.yml")
 	if err != nil {
 		// Todo: handle error
 		return nil, err

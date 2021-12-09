@@ -51,7 +51,7 @@ func run() error {
 		return err
 	}
 
-	return nil
+	return err
 }
 
 func setupDB(cfg *config.Repository) (*sql.DB, error) {
