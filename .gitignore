@@ -2,6 +2,10 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,go,pycharm
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,go,pycharm
 
+# Project specific stuff
+.env
+config.yml
+
 ### Go ###
 # Binaries for programs and plugins
 *.exe

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="PostgreSQL - archies_db@archies-db.c4ct7ae2nihe.eu-west-2.rds.amazonaws.com" uuid="67ab6a33-eaca-4b4d-a267-7a9bf35ecf1d">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://archies-db.c4ct7ae2nihe.eu-west-2.rds.amazonaws.com:5432/archies_db</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>
