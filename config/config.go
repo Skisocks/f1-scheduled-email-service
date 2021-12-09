@@ -1,60 +1,67 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
-	"github.com/kelseyhightower/envconfig"
+	"gopkg.in/yaml.v2"
+	"os"
 )
 
 type Config struct {
-	EmailHandler EmailHandler `envconfig:"EMAIL_HANDLER"`
-	Ergast       Ergast       `envconfig:"ERGAST_F1"`
-	SportsIO     SportsIO     `envconfig:"SPORTS_IO"`
-	Repository   Repository   `envconfig:"DATABASE"`
+	EmailHandler EmailHandler `yaml:"EMAIL_HANDLER"`
+	Ergast       Ergast       `yaml:"ERGAST_F1"`
+	SportsIO     SportsIO     `yaml:"SPORTS_IO"`
+	Repository   Repository   `yaml:"DATABASE"`
 }
 
 type EmailHandler struct {
-	EmailName      string `envconfig:"EMAIL_NAME"`
-	SenderAddress  string `envconfig:"EMAIL_SENDER_EMAIL_ADDRESS"`
-	SenderPassword string `envconfig:"EMAIL_SENDER_EMAIL_PASSWORD"`
-	SMTPServer     string `envconfig:"EMAIL_SMTP_SERVER"`
-	SMTPHost       int    `envconfig:"EMAIL_SMTP_HOST"`
+	EmailName      string `yaml:"EMAIL_NAME"`
+	SenderAddress  string `yaml:"SENDER_EMAIL_ADDRESS"`
+	SenderPassword string `yaml:"SENDER_EMAIL_PASSWORD"`
+	SMTPServer     string `yaml:"SMTP_SERVER"`
+	SMTPHost       int    `yaml:"SMTP_HOST"`
 }
 
 type Ergast struct {
-	BaseURL                      string `envconfig:"ERGAST_BASE_URL"`
-	DriversEndpoint              string `envconfig:"ERGAST_DRIVERS_ENDPOINT"`
-	DriverStandingsEndpoint      string `envconfig:"ERGAST_DRIVER_STANDINGS_ENDPOINT"`
-	Season                       string `envconfig:"ERGAST_SEASON"`
-	ConstructorStandingsEndpoint string `envconfig:"ERGAST_CONSTRUCTORS_STANDINGS_ENDPOINT"`
+	BaseURL                      string `yaml:"BASE_URL"`
+	DriversEndpoint              string `yaml:"DRIVERS_ENDPOINT"`
+	DriverStandingsEndpoint      string `yaml:"DRIVER_STANDINGS_ENDPOINT"`
+	Season                       string `yaml:"SEASON"`
+	ConstructorStandingsEndpoint string `yaml:"CONSTRUCTORS_STANDINGS_ENDPOINT"`
 }
 
 type SportsIO struct {
-	Host          string `envconfig:"SPORTS_IO_HOST"`
-	APIKey        string `envconfig:"SPORTS_IO_API_KEY"`
-	BaseURL       string `envconfig:"SPORTS_IO_BASE_URL"`
-	EventEndpoint string `envconfig:"SPORTS_IO_CURRENT_EVENT_ENDPOINT"`
-	Timezone      string `envconfig:"SPORTS_IO_TIMEZONE"`
+	Host          string `yaml:"HOST"`
+	APIKey        string `yaml:"API_KEY"`
+	BaseURL       string `yaml:"BASE_URL"`
+	EventEndpoint string `yaml:"CURRENT_EVENT_ENDPOINT"`
+	Timezone      string `yaml:"TIMEZONE"`
 }
 
 type Repository struct {
-	Name     string `envconfig:"DB_NAME" `
-	User     string `envconfig:"DB_USER"`
-	Password string `envconfig:"DB_PASSWORD"`
-	Host     string `envconfig:"DB_HOST"`
-	Port     int    `envconfig:"DB_PORT"`
-	Schema   string `envconfig:"DB_SCHEMA"`
+	Name     string `yaml:"DB_NAME"`
+	User     string `yaml:"DB_USER"`
+	Password string `yaml:"DB_PASSWORD"`
+	Host     string `yaml:"DB_HOST"`
+	Port     int    `yaml:"DB_PORT"`
+	Schema   string `yaml:"DB_SCHEMA"`
 }
 
 // GetConfig loads the variables from config.ini
 func GetConfig() (*Config, error) {
-	if err := godotenv.Load(".env"); err != nil {
-		// Todo: Log here?
+	f, err := os.Open("/config.yml")
+	if err != nil {
+		// Todo: handle error
 		return nil, err
 	}
+	defer f.Close()
+	// Todo: handle error
+
 	var cfg Config
-	if err := envconfig.Process("", &cfg); err != nil {
-		// Todo: Log here?
+	decoder := yaml.NewDecoder(f)
+	err = decoder.Decode(&cfg)
+	if err != nil {
+		// Todo: handle error
 		return nil, err
 	}
-	return &cfg, nil
+
+	return &cfg, err
 }
