@@ -24,7 +24,7 @@ func (eh *emailHandler) SendEmail(subject string, body string, UserEmails []stri
 	m := gomail.NewMessage()
 
 	// Set message headers
-	m.SetAddressHeader("From", eh.config.SenderAddress, "F1 Info")
+	m.SetAddressHeader("From", eh.config.SenderAddress, eh.config.EmailName)
 	m.SetHeader("To", UserEmails...)
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/plain", body)

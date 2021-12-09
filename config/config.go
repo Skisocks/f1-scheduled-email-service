@@ -13,6 +13,7 @@ type Config struct {
 }
 
 type EmailHandler struct {
+	EmailName      string `yaml:"EMAIL_NAME"`
 	SenderAddress  string `yaml:"SENDER_EMAIL_ADDRESS"`
 	SenderPassword string `yaml:"SENDER_EMAIL_PASSWORD"`
 	SMTPServer     string `yaml:"SMTP_SERVER"`
