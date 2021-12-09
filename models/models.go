@@ -40,3 +40,9 @@ type EventsResponse struct {
 		Status   string      `json:"status"`
 	} `json:"response"`
 }
+
+type CurrentEvent struct {
+	Name     string
+	Type     string
+	Datetime time.Time
+}
