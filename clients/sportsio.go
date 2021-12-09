@@ -53,7 +53,7 @@ func (sio *sportsIO) do(method string, endpoint string, params map[string]string
 func (sio *sportsIO) GetEventsResponse() (*models.EventsResponse, error) {
 	// Create params
 	params := map[string]string{
-		"date":     time.Now().Format("2006-01-02"),
+		"date":     "2021-12-05", //time.Now().Format("2006-01-02"),
 		"timezone": sio.config.Timezone,
 	}
 
