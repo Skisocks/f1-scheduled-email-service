@@ -3,6 +3,7 @@ package config
 import (
 	"gopkg.in/yaml.v2"
 	"os"
+	"time"
 )
 
 type Config struct {
@@ -21,19 +22,21 @@ type EmailHandler struct {
 }
 
 type Ergast struct {
-	BaseURL                      string `yaml:"BASE_URL"`
-	DriversEndpoint              string `yaml:"DRIVERS_ENDPOINT"`
-	DriverStandingsEndpoint      string `yaml:"DRIVER_STANDINGS_ENDPOINT"`
-	Season                       string `yaml:"SEASON"`
-	ConstructorStandingsEndpoint string `yaml:"CONSTRUCTORS_STANDINGS_ENDPOINT"`
+	BaseURL                      string        `yaml:"BASE_URL"`
+	DriversEndpoint              string        `yaml:"DRIVERS_ENDPOINT"`
+	DriverStandingsEndpoint      string        `yaml:"DRIVER_STANDINGS_ENDPOINT"`
+	Season                       string        `yaml:"SEASON"`
+	ConstructorStandingsEndpoint string        `yaml:"CONSTRUCTORS_STANDINGS_ENDPOINT"`
+	Timeout                      time.Duration `yaml:"TIMEOUT"`
 }
 
 type SportsIO struct {
-	Host          string `yaml:"HOST"`
-	APIKey        string `yaml:"API_KEY"`
-	BaseURL       string `yaml:"BASE_URL"`
-	EventEndpoint string `yaml:"CURRENT_EVENT_ENDPOINT"`
-	Timezone      string `yaml:"TIMEZONE"`
+	Host          string        `yaml:"HOST"`
+	APIKey        string        `yaml:"API_KEY"`
+	BaseURL       string        `yaml:"BASE_URL"`
+	EventEndpoint string        `yaml:"CURRENT_EVENT_ENDPOINT"`
+	Timezone      string        `yaml:"TIMEZONE"`
+	Timeout       time.Duration `yaml:"TIMEOUT"`
 }
 
 type Repository struct {
@@ -47,7 +50,7 @@ type Repository struct {
 
 // GetConfig loads the variables from config.ini
 func GetConfig() (*Config, error) {
-	f, err := os.Open("/config.yml")
+	f, err := os.Open("./config.yml")
 	if err != nil {
 		// Todo: handle error
 		return nil, err
@@ -63,5 +66,5 @@ func GetConfig() (*Config, error) {
 		return nil, err
 	}
 
-	return &cfg, err
+	return &cfg, nil
 }
