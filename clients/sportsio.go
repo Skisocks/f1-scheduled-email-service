@@ -5,6 +5,7 @@ import (
 	"email-service/models"
 	"encoding/json"
 	"fmt"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -15,14 +16,20 @@ type CurrentEventGetter interface {
 }
 
 type sportsIO struct {
+	logger     *zap.Logger
 	config     *config.SportsIO
 	httpClient *http.Client
 }
 
-func NewSportsIOClient(cfg *config.SportsIO, timeout time.Duration) *sportsIO {
+func NewSportsIOClient(
+	logger *zap.Logger,
+	cfg *config.SportsIO,
+) *sportsIO {
 	return &sportsIO{
+		logger:     logger,
 		config:     cfg,
-		httpClient: &http.Client{Timeout: timeout}}
+		httpClient: &http.Client{Timeout: time.Second * cfg.Timeout},
+	}
 }
 
 // do is an API call wrapper returning a http.Response
@@ -31,9 +38,9 @@ func (sio *sportsIO) do(method string, endpoint string, params map[string]string
 	baseURL := fmt.Sprintf("%s%s", sio.config.BaseURL, endpoint)
 	req, err := http.NewRequest(method, baseURL, nil)
 	if err != nil {
-		// Todo: handle error
 		return nil, err
 	}
+	sio.httpClient.Cl = sio.config.Timeout
 
 	// Add headers to the request
 	req.Header.Add("x-rapidapi-host", sio.config.Host)
@@ -47,7 +54,13 @@ func (sio *sportsIO) do(method string, endpoint string, params map[string]string
 	// Add query to request
 	req.URL.RawQuery = q.Encode()
 
-	return sio.httpClient.Do(req)
+	response, err := sio.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close() // Todo: handle closing error
+
+	return response, nil
 }
 
 func (sio *sportsIO) GetEventsResponse() (*models.EventsResponse, error) {
@@ -60,14 +73,18 @@ func (sio *sportsIO) GetEventsResponse() (*models.EventsResponse, error) {
 	// Make the request
 	res, err := sio.do(http.MethodGet, sio.config.EventEndpoint, params)
 	if err != nil {
-		return nil, err
+		sio.logger.Error(fmt.Sprintf("failed to make request to Ergast API: %s", err))
 	}
-	defer res.Body.Close()
+
+	// Check for non 2xx code
+	if res.StatusCode != http.StatusOK {
+		sio.logger.Error(fmt.Sprintf("non-OK HTTP status code: %d", res.StatusCode))
+	}
 
 	// Read the body
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		// Todo: handle error
+		sio.logger.Error(fmt.Sprintf("failed to : %s", err))
 		return nil, err
 	}
 

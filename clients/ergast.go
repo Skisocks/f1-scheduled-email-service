@@ -17,10 +17,10 @@ type ergast struct {
 	httpClient *http.Client
 }
 
-func NewErgastClient(cfg *config.Ergast, timeout time.Duration) *ergast {
+func NewErgastClient(cfg *config.Ergast) *ergast {
 	return &ergast{
 		config:     cfg,
-		httpClient: &http.Client{Timeout: timeout},
+		httpClient: &http.Client{Timeout: time.Second * cfg.Timeout},
 	}
 }
 
