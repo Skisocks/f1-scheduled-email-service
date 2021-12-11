@@ -9,11 +9,8 @@ import (
 	"email-service/services"
 	"fmt"
 	_ "github.com/lib/pq"
-	"log"
-	"time"
+	"go.uber.org/zap"
 )
-
-var TimeOut time.Duration = time.Second * 5
 
 func main() {
 	if err := run(); err != nil {
@@ -22,24 +19,43 @@ func main() {
 }
 
 func run() error {
-	// Get config struct
+	// Setup logging
+	logger, err := zap.NewDevelopment()
+	if err != nil {
+		return err
+	}
+	defer func(logger *zap.Logger) {
+		err := logger.Sync()
+		if err != nil {
+			panic(err)
+		}
+	}(logger)
+
+	// Get configs
 	cfg, err := config.GetConfig()
 	if err != nil {
-		return fmt.Errorf("failed to get config: %s", err)
+		logger.Panic(fmt.Sprintf("failed to retrive config file: %s", err.Error()))
+		return err
 	}
-
-	// Initialise API Clients
-	SportsIOClient := clients.NewSportsIOClient(&cfg.SportsIO, TimeOut)
-	ErgastClient := clients.NewErgastClient(&cfg.Ergast, TimeOut)
 
 	// Create new database connection pool
 	DB, err := setupDB(&cfg.Repository)
 	if err != nil {
-		log.Fatal(err)
+		logger.Panic(fmt.Sprintf("failed to setup database: %s", err.Error()))
 	}
+	defer func(DB *sql.DB) {
+		err := closeDB(DB)
+		if err != nil {
+			logger.Error(fmt.Sprintf("failed to close database connection: %s", err.Error()))
+		}
+	}(DB)
+
+	// Initialise API Clients
+	SportsIOClient := clients.NewSportsIOClient(logger, &cfg.SportsIO)
+	ErgastClient := clients.NewErgastClient(&cfg.Ergast)
 
 	// Initialise repo
-	Repository := repositories.NewRepository(DB)
+	Repository := repositories.NewRepository(logger, DB)
 
 	// Initialise email handler
 	EmailHandler := handlers.NewEmailHandler(&cfg.EmailHandler)
@@ -51,11 +67,11 @@ func run() error {
 		return err
 	}
 
-	return err
+	return nil
 }
 
-func setupDB(cfg *config.Repository) (*sql.DB, error) {
-	// connection string
+func setupDB(cfg *config.Repository) (db *sql.DB, err error) {
+	// Create connection string
 	psqlconn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s search_path=%s sslmode=disable",
 		cfg.Host,
@@ -65,18 +81,11 @@ func setupDB(cfg *config.Repository) (*sql.DB, error) {
 		cfg.Name,
 		cfg.Schema,
 	)
-
-	db, err := sql.Open("postgres", psqlconn)
-	if err != nil {
-		panic(err)
-	}
-	return db, err
+	db, err = sql.Open("postgres", psqlconn)
+	err = db.Ping()
+	return
 }
 
 func closeDB(DB *sql.DB) error {
-	err := DB.Close()
-	if err != nil {
-		return err
-	}
-	return err
+	return DB.Close()
 }
