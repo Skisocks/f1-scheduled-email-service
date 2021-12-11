@@ -40,7 +40,6 @@ func (sio *sportsIO) do(method string, endpoint string, params map[string]string
 	if err != nil {
 		return nil, err
 	}
-	sio.httpClient.Cl = sio.config.Timeout
 
 	// Add headers to the request
 	req.Header.Add("x-rapidapi-host", sio.config.Host)
