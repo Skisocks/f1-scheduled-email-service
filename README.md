@@ -7,7 +7,7 @@ to use a Postgres database for accessing the current subscribers' information.
 Docker is used in deployment running a cron job to start the service at 9:00 every day.
 
 ## Config
-The project uses a config.yaml file located in the root of the project to set global variables. An example of this 
+The project uses a "config.yaml" file to be located in the root of the project to set global variables. An example of this 
 file can be found in the repository.
 
 ## License
