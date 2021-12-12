@@ -52,7 +52,7 @@ func run() error {
 
 	// Initialise API Clients
 	SportsIOClient := clients.NewSportsIOClient(logger, &cfg.SportsIO)
-	ErgastClient := clients.NewErgastClient(&cfg.Ergast)
+	ErgastClient := clients.NewErgastClient(logger, &cfg.Ergast)
 
 	// Initialise repo
 	Repository := repositories.NewRepository(logger, DB)
