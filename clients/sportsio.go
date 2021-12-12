@@ -12,7 +12,7 @@ import (
 )
 
 type CurrentEventGetter interface {
-	GetEventsResponse() (*models.EventsResponse, error)
+	GetEventsResponse() *models.EventsResponse
 }
 
 type sportsIO struct {
@@ -50,6 +50,7 @@ func (sio *sportsIO) do(method string, endpoint string, params map[string]string
 	for key, val := range params {
 		q.Set(key, val)
 	}
+
 	// Add query to request
 	req.URL.RawQuery = q.Encode()
 
@@ -57,12 +58,15 @@ func (sio *sportsIO) do(method string, endpoint string, params map[string]string
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close() // Todo: handle closing error
 
+	err = response.Body.Close()
+	if err != nil {
+		return nil, err
+	}
 	return response, nil
 }
 
-func (sio *sportsIO) GetEventsResponse() (*models.EventsResponse, error) {
+func (sio *sportsIO) GetEventsResponse() *models.EventsResponse {
 	// Create params
 	params := map[string]string{
 		"date":     time.Now().Format("2006-01-02"),
@@ -83,15 +87,13 @@ func (sio *sportsIO) GetEventsResponse() (*models.EventsResponse, error) {
 	// Read the body
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		sio.logger.Error(fmt.Sprintf("failed to : %s", err))
-		return nil, err
+		sio.logger.Error(fmt.Sprintf("failed to read the response body: %s", err))
 	}
 
 	// Unmarshal the json into a EventsResponse
 	var CurrentEvent *models.EventsResponse
 	if err = json.Unmarshal(body, &CurrentEvent); err != nil {
-		// Todo: handle error
-		return nil, err
+		sio.logger.Error(fmt.Sprintf("failed to unmarshall the response: %s", err))
 	}
-	return CurrentEvent, nil
+	return CurrentEvent
 }

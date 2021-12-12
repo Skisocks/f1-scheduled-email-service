@@ -58,7 +58,7 @@ func run() error {
 	Repository := repositories.NewRepository(logger, DB)
 
 	// Initialise email handler
-	EmailHandler := handlers.NewEmailHandler(&cfg.EmailHandler)
+	EmailHandler := handlers.NewEmailHandler(logger, &cfg.EmailHandler)
 
 	EmailService := services.NewEmailService(SportsIOClient, ErgastClient, Repository, EmailHandler)
 
