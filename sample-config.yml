@@ -1,0 +1,34 @@
+# Client configurations
+ERGAST_F1:
+  BASE_URL: "https://ergast.com/api/f1"
+  DRIVERS_ENDPOINT: "/drivers.json"
+  DRIVER_STANDINGS_ENDPOINT: "/driverStandings.json"
+  SEASON: "current"
+  CONSTRUCTORS_STANDINGS_ENDPOINT: "/constructorStandings.json"
+  TIMEOUT: 5
+
+SPORTS_IO:
+  BASE_URL: "https://v1.formula-1.api-sports.io"
+  HOST: "v1.formula-1.api-sports.io"
+  API_KEY: ""
+  CURRENT_EVENT_ENDPOINT: "/races"
+  TIMEZONE: "Europe/London"
+  TIMEOUT: 5
+
+DATABASE:
+  DB_NAME: ""
+  DB_USER: ""
+  DB_PASSWORD: ""
+  DB_HOST: ""
+  DB_PORT:
+  DB_SCHEMA: ""
+
+# Other configs
+EMAIL_HANDLER:
+  EMAIL_NAME: ""
+  SENDER_EMAIL_ADDRESS: ""
+  SENDER_EMAIL_PASSWORD: ""
+  SMTP_SERVER: ""
+  SMTP_HOST:
+
+
