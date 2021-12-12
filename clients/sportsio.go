@@ -12,7 +12,7 @@ import (
 )
 
 type CurrentEventGetter interface {
-	GetEventsResponse() *models.EventsResponse
+	GetEvent() *models.CurrentEvent
 }
 
 type sportsIO struct {
@@ -66,7 +66,9 @@ func (sio *sportsIO) do(method string, endpoint string, params map[string]string
 	return response, nil
 }
 
-func (sio *sportsIO) GetEventsResponse() *models.EventsResponse {
+// getEventsResponse uses do to make a request to the Events endpoint of the SportsIO API
+// and returns a models.EventsResponse
+func (sio *sportsIO) getEventsResponse() *models.EventsResponse {
 	// Create params
 	params := map[string]string{
 		"date":     time.Now().Format("2006-01-02"),
@@ -96,4 +98,29 @@ func (sio *sportsIO) GetEventsResponse() *models.EventsResponse {
 		sio.logger.Error(fmt.Sprintf("failed to unmarshall the response: %s", err))
 	}
 	return CurrentEvent
+}
+
+// GetEvent returns a models.CurrentEvent
+// depending on whether there is a race or 1st qualifying session today.
+// If there is no event then GetEvent == nil
+func (sio *sportsIO) GetEvent() *models.CurrentEvent {
+	EventsResponse := sio.getEventsResponse()
+
+	var todaysEvent *models.CurrentEvent = nil
+	for i := range EventsResponse.Events {
+		// Check if there's a race or 1st qualifying today
+		switch EventsResponse.Events[i].Type {
+		case "Race", "1st Qualifying":
+			{
+				// Take the required variables from the EventResponse and add them to todaysEvent
+				todaysEvent = &models.CurrentEvent{
+					Name:     EventsResponse.Events[i].Competition.Name,
+					Type:     EventsResponse.Events[i].Type,
+					Datetime: EventsResponse.Events[i].Date,
+				}
+				return todaysEvent
+			}
+		}
+	}
+	return todaysEvent
 }
