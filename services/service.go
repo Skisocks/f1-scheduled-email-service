@@ -5,7 +5,6 @@ import (
 	"email-service/handlers"
 	"email-service/models"
 	"email-service/repositories"
-	"fmt"
 )
 
 type ScheduleEmailService struct {
@@ -22,31 +21,20 @@ func NewEmailService(
 	EmailHandler handlers.EmailSender,
 ) *ScheduleEmailService {
 	return &ScheduleEmailService{
-		SportsIOClient,
-		ErgastClient,
-		Repository,
-		EmailHandler,
+		sportsIOClient: SportsIOClient,
+		ergastClient:   ErgastClient,
+		repository:     Repository,
+		emailHandler:   EmailHandler,
 	}
 }
 
 func (ses ScheduleEmailService) Run() {
-	eventsResponse, _ := ses.sportsIOClient.GetEventsResponse()
+	eventsResponse := ses.sportsIOClient.GetEventsResponse()
 	todaysEvent := getEvent(eventsResponse)
 
 	if todaysEvent != nil {
-		emailSubject := fmt.Sprintf(
-			"The %s session of the %s today starts at %s",
-			todaysEvent.Type,
-			todaysEvent.Name,
-			todaysEvent.Datetime.Format("15:04:05 MST"),
-		)
-		emailBody := fmt.Sprintf("")
-
 		// Send email to the current users
-		err := ses.emailHandler.SendEmail(emailSubject, emailBody, ses.repository.GetUserEmails())
-		if err != nil {
-			return
-		}
+		ses.emailHandler.SendEmail(todaysEvent, ses.repository.GetUserEmails())
 	}
 }
 
