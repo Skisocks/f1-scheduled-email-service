@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"email-service/models"
+	"fmt"
 	"go.uber.org/zap"
 )
 
@@ -51,7 +52,7 @@ func (repo *repository) GetAll() ([]models.User, error) {
 func (repo *repository) GetUserEmails() []string {
 	users, err := repo.GetAll()
 	if err != nil {
-		return nil
+		repo.logger.Error(fmt.Sprintf("failed to query database: %s", err.Error()))
 	}
 
 	var userEmails []string
