@@ -2,30 +2,43 @@ package handlers
 
 import (
 	"email-service/config"
+	"email-service/models"
 	"fmt"
+	"go.uber.org/zap"
 	"gopkg.in/gomail.v2"
 )
 
 type EmailSender interface {
-	SendEmail(subject string, body string, UserEmails []string) error
+	SendEmail(currentEvent *models.CurrentEvent, userEmails []string)
 }
 
 type emailHandler struct {
+	logger *zap.Logger
 	config *config.EmailHandler
 }
 
-func NewEmailHandler(cfg *config.EmailHandler) *emailHandler {
+func NewEmailHandler(logger *zap.Logger, cfg *config.EmailHandler) *emailHandler {
 	return &emailHandler{
+		logger: logger,
 		config: cfg,
 	}
 }
 
-func (eh *emailHandler) SendEmail(subject string, body string, UserEmails []string) error {
+func (eh *emailHandler) SendEmail(currentEvent *models.CurrentEvent, userEmails []string) {
 	m := gomail.NewMessage()
+
+	// Create email contents
+	subject := fmt.Sprintf(
+		"The %s session of the %s today starts at %s",
+		currentEvent.Type,
+		currentEvent.Name,
+		currentEvent.Datetime.Format("15:04:05 MST"),
+	)
+	body := fmt.Sprintf("")
 
 	// Set message headers
 	m.SetAddressHeader("From", eh.config.SenderAddress, eh.config.EmailName)
-	m.SetHeader("To", UserEmails...)
+	m.SetHeader("To", userEmails...)
 	m.SetHeader("Subject", subject)
 	m.SetBody("text/plain", body)
 
@@ -39,8 +52,8 @@ func (eh *emailHandler) SendEmail(subject string, body string, UserEmails []stri
 
 	// Send email
 	if err := d.DialAndSend(m); err != nil {
-		fmt.Println(err)
-		panic(err)
+		eh.logger.Panic(fmt.Sprintf("failed to send email: %s", err))
+		return
 	}
-	return nil
+	eh.logger.Info("Email sent")
 }
