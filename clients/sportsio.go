@@ -32,38 +32,29 @@ func NewSportsIOClient(
 	}
 }
 
-// do is an API call wrapper returning a http.Response
-func (sio *sportsIO) do(method string, endpoint string, params map[string]string) (*http.Response, error) {
-	// Create new request
-	baseURL := fmt.Sprintf("%s%s", sio.config.BaseURL, endpoint)
-	req, err := http.NewRequest(method, baseURL, nil)
-	if err != nil {
-		return nil, err
+// GetEvent returns a models.CurrentEvent
+// depending on whether there is a race or 1st qualifying session today.
+// If there is no event then GetEvent == nil
+func (sio *sportsIO) GetEvent() *models.CurrentEvent {
+	EventsResponse := sio.getEventsResponse()
+
+	var todaysEvent *models.CurrentEvent = nil
+	for i := range EventsResponse.Events {
+		// Check if there's a race or 1st qualifying today
+		switch EventsResponse.Events[i].Type {
+		case "Race", "1st Qualifying":
+			{
+				// Take the required variables from the EventResponse and add them to todaysEvent
+				todaysEvent = &models.CurrentEvent{
+					Name:     EventsResponse.Events[i].Competition.Name,
+					Type:     EventsResponse.Events[i].Type,
+					Datetime: EventsResponse.Events[i].Date,
+				}
+				return todaysEvent
+			}
+		}
 	}
-
-	// Add headers to the request
-	req.Header.Add("x-rapidapi-host", sio.config.Host)
-	req.Header.Add("x-rapidapi-key", sio.config.APIKey)
-
-	// Iterate through params and add to query
-	q := req.URL.Query()
-	for key, val := range params {
-		q.Set(key, val)
-	}
-
-	// Add query to request
-	req.URL.RawQuery = q.Encode()
-
-	response, err := sio.httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	err = response.Body.Close()
-	if err != nil {
-		return nil, err
-	}
-	return response, nil
+	return todaysEvent
 }
 
 // getEventsResponse uses do to make a request to the Events endpoint of the SportsIO API
@@ -100,27 +91,36 @@ func (sio *sportsIO) getEventsResponse() *models.EventsResponse {
 	return CurrentEvent
 }
 
-// GetEvent returns a models.CurrentEvent
-// depending on whether there is a race or 1st qualifying session today.
-// If there is no event then GetEvent == nil
-func (sio *sportsIO) GetEvent() *models.CurrentEvent {
-	EventsResponse := sio.getEventsResponse()
-
-	var todaysEvent *models.CurrentEvent = nil
-	for i := range EventsResponse.Events {
-		// Check if there's a race or 1st qualifying today
-		switch EventsResponse.Events[i].Type {
-		case "Race", "1st Qualifying":
-			{
-				// Take the required variables from the EventResponse and add them to todaysEvent
-				todaysEvent = &models.CurrentEvent{
-					Name:     EventsResponse.Events[i].Competition.Name,
-					Type:     EventsResponse.Events[i].Type,
-					Datetime: EventsResponse.Events[i].Date,
-				}
-				return todaysEvent
-			}
-		}
+// do is an API call wrapper returning a http.Response
+func (sio *sportsIO) do(method string, endpoint string, params map[string]string) (*http.Response, error) {
+	// Create new request
+	baseURL := fmt.Sprintf("%s%s", sio.config.BaseURL, endpoint)
+	req, err := http.NewRequest(method, baseURL, nil)
+	if err != nil {
+		return nil, err
 	}
-	return todaysEvent
+
+	// Add headers to the request
+	req.Header.Add("x-rapidapi-host", sio.config.Host)
+	req.Header.Add("x-rapidapi-key", sio.config.APIKey)
+
+	// Iterate through params and add to query
+	q := req.URL.Query()
+	for key, val := range params {
+		q.Set(key, val)
+	}
+
+	// Add query to request
+	req.URL.RawQuery = q.Encode()
+
+	response, err := sio.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	err = response.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
 }
