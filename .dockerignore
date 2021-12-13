@@ -1,0 +1,5 @@
+.gitignore
+.env
+.git
+.idea
+sample-config.yml

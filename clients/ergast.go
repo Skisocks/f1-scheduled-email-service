@@ -3,6 +3,7 @@ package clients
 import (
 	"email-service/config"
 	"fmt"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
@@ -13,14 +14,16 @@ type StandingsGetter interface {
 }
 
 type ergast struct {
+	logger     *zap.Logger
 	config     *config.Ergast
 	httpClient *http.Client
 }
 
-func NewErgastClient(cfg *config.Ergast, timeout time.Duration) *ergast {
+func NewErgastClient(logger *zap.Logger, cfg *config.Ergast) *ergast {
 	return &ergast{
+		logger:     logger,
 		config:     cfg,
-		httpClient: &http.Client{Timeout: timeout},
+		httpClient: &http.Client{Timeout: time.Second * cfg.Timeout},
 	}
 }
 
