@@ -1,4 +1,4 @@
-module email-service
+module github.com/Skisocks/f1-scheduled-email-service
 
 go 1.17
 

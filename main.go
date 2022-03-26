@@ -2,11 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"email-service/clients"
-	"email-service/config"
-	"email-service/handlers"
-	"email-service/repositories"
-	"email-service/services"
+	"personal/f1/f1-scheduled-email-service/clients"
+	"personal/f1/f1-scheduled-email-service/handlers"
+	"personal/f1/f1-scheduled-email-service/services"
+
 	"fmt"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
